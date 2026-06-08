@@ -1092,3 +1092,19 @@ body.leader-mode .leader-only{
   color:#d94d7d;
   box-shadow:inset 0 0 0 1px rgba(255,120,167,.28);
 }
+
+
+/* ===== V17 Firebase 即時同步狀態 ===== */
+.sync-status{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#eef8ff;
+  color:#397596;
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:12px;
+  box-shadow:inset 0 0 0 1px rgba(90,160,200,.18);
+}

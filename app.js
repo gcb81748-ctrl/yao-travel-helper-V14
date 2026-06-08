@@ -108,6 +108,10 @@ const itineraries = {
 const ITINERARY_KEY = "yaoTravelItinerariesV14";
 let itineraryCache = null;
 let cloudSyncReady = false;
+let realtimeUnsubscribe = null;
+let currentOpenDay = null;
+let isEditingItinerary = false;
+let lastCloudSignature = ""; 
 
 function deepCopy(data) {
   return JSON.parse(JSON.stringify(data));
@@ -140,6 +144,8 @@ function saveItineraries(data) {
     window.cloudSaveItineraries(data)
       .then(() => {
         cloudSyncReady = true;
+        lastCloudSignature = JSON.stringify(data);
+        updateSyncStatus("☁️ 已同步到 Firebase");
         console.log("Firebase 行程同步成功");
       })
       .catch((error) => {
@@ -163,6 +169,7 @@ async function initializeItineraries() {
 
     if (cloudData && typeof cloudData === "object") {
       itineraryCache = cloudData;
+      lastCloudSignature = JSON.stringify(cloudData);
       localStorage.setItem(ITINERARY_KEY, JSON.stringify(cloudData));
       cloudSyncReady = true;
       console.log("已從 Firebase 讀取行程。");
@@ -531,6 +538,8 @@ function escapeHtml(text) {
 }
 
 function renderHome() {
+  currentOpenDay = null;
+  isEditingItinerary = false;
   homePage.innerHTML = "";
   contentPage.classList.add("hidden");
   homePage.classList.remove("hidden");
@@ -552,6 +561,8 @@ function renderHome() {
 }
 
 function openModule(name) {
+  currentOpenDay = null;
+  isEditingItinerary = false;
   homePage.classList.add("hidden");
   contentPage.classList.remove("hidden");
 
@@ -602,12 +613,16 @@ function renderItinerary() {
 }
 
 function renderDayTimeline(day) {
+  currentOpenDay = day;
+  isEditingItinerary = false;
+
   const data = getItineraries();
   const items = data[day] || [];
 
   contentPage.innerHTML = `
     <button class="back-btn" onclick="openModule('行程表')" type="button">← 返回行程表</button>
     <h2>${day}</h2>
+    <div class="sync-status" id="syncStatus">☁️ Firebase 即時同步已啟用</div>
     <div class="timeline-actions leader-only" style="margin-bottom:14px;">
       <button class="edit-itinerary-btn" type="button" onclick="addItineraryItem('${escapeQuote(day)}')">新增行程</button>
     </div>
@@ -647,6 +662,7 @@ function renderDayTimeline(day) {
 }
 
 function renderEditItineraryForm(day, index) {
+  isEditingItinerary = true;
   const data = getItineraries();
   const item = data[day] && data[day][index];
 
@@ -982,8 +998,52 @@ function escapeQuote(text) {
   return String(text).replace(/'/g, "\\'");
 }
 
+
+function updateSyncStatus(message) {
+  const syncStatus = document.getElementById("syncStatus");
+  if (syncStatus) {
+    syncStatus.textContent = message;
+  }
+}
+
+function startRealtimeSync() {
+  if (typeof window.cloudListenItineraries !== "function") {
+    console.warn("Firebase 即時監聽功能尚未載入。");
+    return;
+  }
+
+  if (realtimeUnsubscribe) {
+    realtimeUnsubscribe();
+    realtimeUnsubscribe = null;
+  }
+
+  realtimeUnsubscribe = window.cloudListenItineraries((cloudData) => {
+    if (!cloudData || typeof cloudData !== "object") return;
+
+    const newSignature = JSON.stringify(cloudData);
+    if (newSignature === lastCloudSignature) return;
+
+    lastCloudSignature = newSignature;
+    itineraryCache = cloudData;
+    localStorage.setItem(ITINERARY_KEY, JSON.stringify(cloudData));
+    cloudSyncReady = true;
+
+    updateSyncStatus("☁️ 已收到 Firebase 最新行程");
+
+    if (currentOpenDay && !isEditingItinerary) {
+      renderDayTimeline(currentOpenDay);
+    }
+  }, (error) => {
+    cloudSyncReady = false;
+    console.error("Firebase 即時同步失敗：", error);
+    updateSyncStatus("⚠️ Firebase 即時同步失敗，請檢查網路");
+  });
+}
+
+
 async function startApp() {
   await initializeItineraries();
+  startRealtimeSync();
   renderHome();
 }
 

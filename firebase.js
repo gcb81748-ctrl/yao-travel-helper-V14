@@ -43,3 +43,30 @@ window.cloudSaveItineraries = async function (itineraries) {
     { merge: true }
   );
 };
+
+
+window.cloudListenItineraries = function (onData, onError) {
+  return db.doc(TRAVEL_DOC_PATH).onSnapshot(
+    (doc) => {
+      if (!doc.exists) {
+        onData(null);
+        return;
+      }
+
+      const data = doc.data();
+
+      if (data && data.itineraries) {
+        onData(data.itineraries);
+      } else {
+        onData(null);
+      }
+    },
+    (error) => {
+      if (typeof onError === "function") {
+        onError(error);
+      } else {
+        console.error("Firestore 即時監聽錯誤：", error);
+      }
+    }
+  );
+};
