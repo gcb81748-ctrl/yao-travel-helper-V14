@@ -1108,3 +1108,126 @@ body.leader-mode .leader-only{
   margin-bottom:12px;
   box-shadow:inset 0 0 0 1px rgba(90,160,200,.18);
 }
+
+
+/* ===== V18 附近搜尋強化版 ===== */
+.nearby-header{
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:12px;
+  background:
+    radial-gradient(circle at top left, rgba(255,155,190,.30), transparent 45%),
+    linear-gradient(180deg,#fff7fa 0%,#ffffff 100%);
+  box-shadow:
+    0 10px 22px rgba(85,45,60,.075),
+    inset 0 0 0 1px rgba(255,190,210,.25);
+}
+
+.nearby-title{
+  font-size:20px;
+  font-weight:900;
+  color:#342630;
+  margin-bottom:6px;
+}
+
+.nearby-desc{
+  color:#7e656f;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.55;
+}
+
+.nearby-section-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.nearby-section{
+  border-radius:22px;
+  padding:14px;
+  background:#fff8fb;
+  box-shadow:
+    0 8px 18px rgba(85,45,60,.055),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+}
+
+.nearby-section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#d94d7d;
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.nearby-button-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.nearby-search-card{
+  min-height:104px;
+  border:0;
+  border-radius:18px;
+  padding:12px 8px;
+  background:linear-gradient(180deg,#ffffff 0%,#fffafa 100%);
+  box-shadow:
+    0 8px 18px rgba(85,45,60,.065),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  cursor:pointer;
+}
+
+.nearby-search-card:active{
+  transform:scale(.97);
+}
+
+.nearby-card-icon{
+  font-size:27px;
+  margin-bottom:6px;
+}
+
+.nearby-card-title{
+  color:#342630;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.25;
+}
+
+.nearby-card-subtitle{
+  margin-top:5px;
+  color:#8b6e79;
+  font-size:10px;
+  font-weight:700;
+  line-height:1.25;
+}
+
+@media(max-width:380px){
+  .nearby-button-grid{
+    gap:8px;
+  }
+
+  .nearby-search-card{
+    min-height:96px;
+    padding:10px 6px;
+  }
+
+  .nearby-card-icon{
+    font-size:24px;
+  }
+
+  .nearby-card-title{
+    font-size:13px;
+  }
+
+  .nearby-card-subtitle{
+    font-size:9.5px;
+  }
+}

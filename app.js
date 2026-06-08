@@ -1,4 +1,4 @@
-console.log("V17.3_DAY_ORDER_HARDFIX app.js loaded");
+console.log("V18_NEARBY_SEARCH app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
@@ -945,16 +945,191 @@ function renderLocationShare() {
   contentPage.appendChild(btn);
 }
 
+
+function openNearbyMapSearch(query) {
+  if (!navigator.geolocation) {
+    openGoogleMap(query + " 愛知 名古屋");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const url = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},15z`;
+      window.open(url, "_blank");
+    },
+    () => {
+      alert("無法取得目前位置，將改用一般 Google Maps 搜尋。");
+      openGoogleMap(query + " 愛知 名古屋");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
+}
+
+function renderNearbySearchPage(title, description, groups) {
+  contentPage.innerHTML += `
+    <div class="nearby-header">
+      <div class="nearby-title">${title}</div>
+      <div class="nearby-desc">${description}</div>
+    </div>
+    <div class="note">
+      點選下方按鈕後，系統會向手機要求定位權限，再用 Google Maps 依照目前位置搜尋。
+    </div>
+    <div class="nearby-section-list"></div>
+  `;
+
+  const list = contentPage.querySelector(".nearby-section-list");
+
+  groups.forEach(group => {
+    const section = document.createElement("div");
+    section.className = "nearby-section";
+    section.innerHTML = `
+      <div class="nearby-section-title">
+        <span>${group.icon}</span>
+        <strong>${group.title}</strong>
+      </div>
+      <div class="nearby-button-grid"></div>
+    `;
+
+    const grid = section.querySelector(".nearby-button-grid");
+
+    group.items.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "nearby-search-card";
+      btn.type = "button";
+      btn.innerHTML = `
+        <span class="nearby-card-icon">${item.icon}</span>
+        <span class="nearby-card-title">${item.label}</span>
+        <span class="nearby-card-subtitle">${item.query}</span>
+      `;
+      btn.onclick = () => openNearbyMapSearch(item.query);
+      grid.appendChild(btn);
+    });
+
+    list.appendChild(section);
+  });
+}
+
 function renderNearbySpots() {
-  renderNearbySearchButtons(["附近室內旅遊景點 評分3以上", "附近室外旅遊景點 評分3以上", "附近觀光景點", "附近博物館", "附近公園"]);
+  renderNearbySearchPage(
+    "附近景點搜尋",
+    "依照目前位置快速搜尋周邊景點，適合旅途中臨時找備案。",
+    [
+      {
+        icon: "🌤️",
+        title: "室外景點",
+        items: [
+          { icon: "🏯", label: "熱門觀光景點", query: "附近 觀光景點 評分3以上" },
+          { icon: "🌸", label: "公園散步", query: "附近 公園 評分3以上" },
+          { icon: "📸", label: "拍照景點", query: "附近 拍照景點" },
+          { icon: "🏞️", label: "自然景點", query: "附近 自然景點" }
+        ]
+      },
+      {
+        icon: "🏛️",
+        title: "室內景點",
+        items: [
+          { icon: "🏛️", label: "博物館", query: "附近 博物館 評分3以上" },
+          { icon: "🎨", label: "美術館", query: "附近 美術館 評分3以上" },
+          { icon: "🛍️", label: "商場逛街", query: "附近 購物商場" },
+          { icon: "☔", label: "雨天備案", query: "附近 室內景點" }
+        ]
+      },
+      {
+        icon: "✨",
+        title: "快速推薦",
+        items: [
+          { icon: "⭐", label: "高評價景點", query: "附近 旅遊景點 評分4以上" },
+          { icon: "🚶", label: "步行可到", query: "附近 景點" },
+          { icon: "🌃", label: "夜景", query: "附近 夜景 景點" },
+          { icon: "👨‍👩‍👧", label: "親子景點", query: "附近 親子景點" }
+        ]
+      }
+    ]
+  );
 }
 
 function renderNearbyRestaurants() {
-  renderNearbySearchButtons(["附近餐廳 評分3以上", "附近名古屋美食", "附近鰻魚飯", "附近燒肉", "附近咖啡廳"]);
+  renderNearbySearchPage(
+    "附近餐廳搜尋",
+    "依照目前位置快速搜尋餐廳，Google Maps 會顯示評價、照片與營業時間。",
+    [
+      {
+        icon: "🍜",
+        title: "名古屋美食",
+        items: [
+          { icon: "🍜", label: "拉麵", query: "附近 拉麵 評分3以上" },
+          { icon: "🍱", label: "鰻魚飯", query: "附近 鰻魚飯 評分3以上" },
+          { icon: "🥩", label: "燒肉", query: "附近 燒肉 評分3以上" },
+          { icon: "🍛", label: "味噌豬排", query: "附近 味噌豬排" }
+        ]
+      },
+      {
+        icon: "☕",
+        title: "輕食咖啡",
+        items: [
+          { icon: "☕", label: "咖啡廳", query: "附近 咖啡廳 評分3以上" },
+          { icon: "🥪", label: "早餐", query: "附近 早餐 咖啡廳" },
+          { icon: "🍰", label: "甜點", query: "附近 甜點 評分3以上" },
+          { icon: "🍞", label: "麵包店", query: "附近 麵包店" }
+        ]
+      },
+      {
+        icon: "⭐",
+        title: "快速找餐廳",
+        items: [
+          { icon: "⭐", label: "高評價餐廳", query: "附近 餐廳 評分4以上" },
+          { icon: "👨‍👩‍👧", label: "適合多人", query: "附近 適合聚餐餐廳" },
+          { icon: "⏰", label: "營業中", query: "附近 營業中 餐廳" },
+          { icon: "💴", label: "平價美食", query: "附近 平價美食" }
+        ]
+      }
+    ]
+  );
 }
 
 function renderNearbyShrines() {
-  renderNearbySearchButtons(["附近神社 御守", "附近神社 御朱印", "附近特色神社", "附近寺廟", "附近熱田神宮"]);
+  renderNearbySearchPage(
+    "附近神社搜尋",
+    "依照目前位置快速搜尋神社、寺院、御守與御朱印相關地點。",
+    [
+      {
+        icon: "⛩️",
+        title: "神社寺院",
+        items: [
+          { icon: "⛩️", label: "附近神社", query: "附近 神社" },
+          { icon: "🏮", label: "附近寺廟", query: "附近 寺廟" },
+          { icon: "🌸", label: "特色神社", query: "附近 特色神社" },
+          { icon: "📸", label: "拍照神社", query: "附近 拍照 神社" }
+        ]
+      },
+      {
+        icon: "🎐",
+        title: "御守御朱印",
+        items: [
+          { icon: "🎐", label: "御守", query: "附近 神社 御守" },
+          { icon: "📖", label: "御朱印", query: "附近 神社 御朱印" },
+          { icon: "💕", label: "戀愛御守", query: "附近 戀愛御守 神社" },
+          { icon: "💰", label: "開運金運", query: "附近 開運 金運 神社" }
+        ]
+      },
+      {
+        icon: "⭐",
+        title: "快速推薦",
+        items: [
+          { icon: "⭐", label: "高評價神社", query: "附近 神社 評分4以上" },
+          { icon: "🚶", label: "步行可到", query: "附近 神社" },
+          { icon: "🌲", label: "安靜參拜", query: "附近 安靜 神社" },
+          { icon: "🚌", label: "交通方便", query: "附近 交通方便 神社" }
+        ]
+      }
+    ]
+  );
 }
 
 function renderNearbySearchButtons(options) {
@@ -967,7 +1142,7 @@ function renderNearbySearchButtons(options) {
     btn.className = "small-card";
     btn.type = "button";
     btn.textContent = query;
-    btn.onclick = () => openGoogleMap(query);
+    btn.onclick = () => openNearbyMapSearch(query);
     grid.appendChild(btn);
   });
 
