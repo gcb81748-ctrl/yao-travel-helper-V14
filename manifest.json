@@ -1,0 +1,9 @@
+{
+  "name": "堯的旅遊小助手 test1.5",
+  "short_name": "旅遊助手",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffe3ec",
+  "theme_color": "#ffd6e3",
+  "icons": []
+}

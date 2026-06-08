@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#fff1f5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="旅遊助手" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>堯的旅遊小助手 test1.5</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-bg">
+    <div class="phone-app">
+
+      <header class="hero">
+        <div class="role-mini">
+          <label for="roleSelect">身分</label>
+          <select id="roleSelect">
+            <option value="member">團員</option>
+            <option value="leader">團長</option>
+          </select>
+          <span id="roleStatus">團員模式</span>
+        </div>
+      </header>
+
+      <main class="home-panel">
+        <section id="homePage" class="feature-grid"></section>
+        <section id="contentPage" class="content-page hidden"></section>
+      </main>
+
+      <footer class="bottom-nav">
+        <button onclick="renderHome()" class="nav-active" type="button">
+          <span>🏠</span>
+          <small>首頁</small>
+        </button>
+        <button onclick="openModule('我的收藏')" type="button">
+          <span>♡</span>
+          <small>我的收藏</small>
+        </button>
+        <button onclick="openModule('設定')" type="button">
+          <span>⚙️</span>
+          <small>設定</small>
+        </button>
+      </footer>
+
+      <div class="footer-name">堯的旅遊小助手 test1.5 💕</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
+</body>
+</html>
