@@ -1,7 +1,6 @@
 /*
   V16 Firebase 雲端同步設定
   這個檔案負責連接 Firebase Firestore。
-  請不要把這個檔案改名，index.html 會載入它。
 */
 
 const firebaseConfig = {

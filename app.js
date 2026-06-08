@@ -106,27 +106,82 @@ const itineraries = {
 
 
 const ITINERARY_KEY = "yaoTravelItinerariesV14";
+let itineraryCache = null;
+let cloudSyncReady = false;
 
-function getItineraries() {
+function deepCopy(data) {
+  return JSON.parse(JSON.stringify(data));
+}
+
+function getLocalItineraries() {
   try {
     const saved = JSON.parse(localStorage.getItem(ITINERARY_KEY));
     if (saved && typeof saved === "object") return saved;
   } catch (error) {
-    // ignore invalid saved data
+    console.warn("讀取本機行程失敗，改用預設行程。", error);
   }
 
-  saveItineraries(itineraries);
-  return JSON.parse(JSON.stringify(itineraries));
+  return deepCopy(itineraries);
+}
+
+function getItineraries() {
+  if (!itineraryCache) {
+    itineraryCache = getLocalItineraries();
+  }
+
+  return itineraryCache;
 }
 
 function saveItineraries(data) {
+  itineraryCache = data;
   localStorage.setItem(ITINERARY_KEY, JSON.stringify(data));
+
+  if (typeof window.cloudSaveItineraries === "function") {
+    window.cloudSaveItineraries(data)
+      .then(() => {
+        cloudSyncReady = true;
+        console.log("Firebase 行程同步成功");
+      })
+      .catch((error) => {
+        cloudSyncReady = false;
+        console.error("Firebase 行程同步失敗：", error);
+        alert("本機已儲存，但 Firebase 雲端同步失敗。請檢查網路或 Firestore 規則。");
+      });
+  }
+}
+
+async function initializeItineraries() {
+  itineraryCache = getLocalItineraries();
+
+  if (typeof window.cloudGetItineraries !== "function") {
+    console.warn("firebase.js 尚未載入，使用本機行程。");
+    return;
+  }
+
+  try {
+    const cloudData = await window.cloudGetItineraries();
+
+    if (cloudData && typeof cloudData === "object") {
+      itineraryCache = cloudData;
+      localStorage.setItem(ITINERARY_KEY, JSON.stringify(cloudData));
+      cloudSyncReady = true;
+      console.log("已從 Firebase 讀取行程。");
+    } else {
+      await window.cloudSaveItineraries(itineraryCache);
+      cloudSyncReady = true;
+      console.log("Firebase 尚無行程，已建立第一份雲端行程。");
+    }
+  } catch (error) {
+    cloudSyncReady = false;
+    console.error("Firebase 讀取失敗，使用本機行程：", error);
+  }
 }
 
 function resetItineraries() {
   if (!confirm("確定要恢復預設行程？目前已修改的行程會被覆蓋。")) return;
-  localStorage.removeItem(ITINERARY_KEY);
-  alert("已恢復預設行程。");
+  const defaultData = deepCopy(itineraries);
+  saveItineraries(defaultData);
+  alert("已恢復預設行程，並嘗試同步到 Firebase。");
   openModule("行程表");
 }
 
@@ -159,7 +214,7 @@ function saveEditItineraryForm(day, index) {
   };
 
   saveItineraries(data);
-  alert("行程已儲存。");
+  alert("行程已儲存，並嘗試同步到 Firebase。");
   renderDayTimeline(day);
 }
 
@@ -522,7 +577,7 @@ function renderItinerary() {
 
   contentPage.innerHTML += `
     <div class="note">
-      團長模式可新增、編輯、刪除行程。修改後會儲存在目前這台裝置的瀏覽器內。
+      團長模式可新增、編輯、刪除行程。修改後會先儲存在本機，並同步到 Firebase 雲端。
     </div>
     <div class="timeline-actions leader-only" style="margin-bottom:14px;">
       <button class="edit-itinerary-btn" type="button" onclick="resetItineraries()">恢復預設行程</button>
@@ -927,4 +982,9 @@ function escapeQuote(text) {
   return String(text).replace(/'/g, "\\'");
 }
 
-renderHome();
+async function startApp() {
+  await initializeItineraries();
+  renderHome();
+}
+
+startApp();
