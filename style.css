@@ -1231,3 +1231,247 @@ body.leader-mode .leader-only{
     font-size:9.5px;
   }
 }
+
+
+/* ===== V19 行前倒數中心 ===== */
+.countdown-center{
+  grid-column:1 / -1;
+  border-radius:26px;
+  padding:16px;
+  margin-bottom:14px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255,164,199,.38), transparent 36%),
+    radial-gradient(circle at 88% 12%, rgba(255,219,156,.35), transparent 32%),
+    linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
+  box-shadow:
+    0 12px 26px rgba(85,45,60,.09),
+    inset 0 0 0 1px rgba(255,190,210,.30);
+}
+
+.countdown-main{
+  text-align:center;
+  padding:8px 0 14px;
+}
+
+.countdown-label{
+  color:#d94d7d;
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:4px;
+}
+
+.countdown-number{
+  color:#ff6c9f;
+  font-size:54px;
+  line-height:1;
+  font-weight:900;
+  text-shadow:0 8px 18px rgba(255,108,159,.18);
+}
+
+.countdown-unit{
+  color:#342630;
+  font-size:18px;
+  font-weight:900;
+  margin-top:2px;
+}
+
+.countdown-time{
+  color:#8b6e79;
+  font-size:12px;
+  font-weight:800;
+  margin-top:5px;
+}
+
+.trip-summary-card{
+  border-radius:20px;
+  padding:13px 14px;
+  background:rgba(255,255,255,.78);
+  box-shadow:inset 0 0 0 1px rgba(255,190,210,.22);
+  text-align:center;
+  margin-bottom:12px;
+}
+
+.trip-summary-title{
+  font-size:18px;
+  font-weight:900;
+  color:#342630;
+}
+
+.trip-summary-subtitle{
+  margin-top:4px;
+  color:#d94d7d;
+  font-size:13px;
+  font-weight:900;
+}
+
+.trip-summary-date{
+  margin-top:5px;
+  color:#8b6e79;
+  font-size:12px;
+  font-weight:800;
+}
+
+.trip-mini-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.trip-mini-card{
+  border:0;
+  border-radius:18px;
+  min-height:86px;
+  padding:9px 5px;
+  background:#fff;
+  box-shadow:
+    0 8px 16px rgba(85,45,60,.065),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.trip-mini-card span{
+  font-size:22px;
+  margin-bottom:4px;
+}
+
+.trip-mini-card strong{
+  color:#342630;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.2;
+}
+
+.trip-mini-card small{
+  color:#8b6e79;
+  font-size:10px;
+  font-weight:700;
+  margin-top:4px;
+  line-height:1.2;
+}
+
+.countdown-detail-card{
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:14px;
+  background:linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
+  box-shadow:
+    0 10px 22px rgba(85,45,60,.075),
+    inset 0 0 0 1px rgba(255,190,210,.25);
+}
+
+.countdown-detail-card h3{
+  color:#342630;
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.countdown-detail-card p{
+  color:#7e656f;
+  font-size:13px;
+  line-height:1.55;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.big-countdown-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.big-countdown-row span{
+  color:#ff6c9f;
+  font-size:54px;
+  line-height:1;
+  font-weight:900;
+}
+
+.big-countdown-row strong{
+  color:#342630;
+  font-size:20px;
+  font-weight:900;
+  padding-bottom:5px;
+}
+
+.big-countdown-row small{
+  color:#8b6e79;
+  font-size:12px;
+  font-weight:800;
+  padding-bottom:8px;
+}
+
+.info-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.info-list div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:11px 12px;
+  border-radius:16px;
+  background:#fff3f7;
+}
+
+.info-list span{
+  color:#d94d7d;
+  font-size:12px;
+  font-weight:900;
+}
+
+.info-list strong{
+  color:#342630;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.4;
+}
+
+.weather-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.weather-grid button{
+  border:0;
+  border-radius:16px;
+  padding:12px 8px;
+  background:linear-gradient(180deg,#ffffff,#fff7fa);
+  color:#342630;
+  font-size:13px;
+  font-weight:900;
+  box-shadow:
+    0 8px 16px rgba(85,45,60,.06),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+  cursor:pointer;
+}
+
+@media(max-width:380px){
+  .countdown-center{
+    padding:14px;
+  }
+
+  .countdown-number,
+  .big-countdown-row span{
+    font-size:46px;
+  }
+
+  .trip-mini-card{
+    min-height:80px;
+  }
+
+  .trip-mini-card strong{
+    font-size:11px;
+  }
+
+  .trip-mini-card small{
+    font-size:9px;
+  }
+}

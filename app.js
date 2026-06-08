@@ -1,10 +1,134 @@
-console.log("V18_NEARBY_SEARCH app.js loaded");
+console.log("V19_COUNTDOWN_CENTER app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
 const contentPage = document.getElementById("contentPage");
 const roleSelect = document.getElementById("roleSelect");
 const roleStatus = document.getElementById("roleStatus");
+
+const tripInfo = {
+  destination: "愛知縣、名古屋",
+  tripName: "名古屋五天四夜",
+  startDate: "2026-06-19T09:00:00+08:00",
+  endDate: "2026-06-23T15:50:00+08:00",
+  outboundFlight: "IT206",
+  returnFlight: "IT207",
+  hotel: "名古屋櫻通口LiVEMAX飯店"
+};
+
+function getCountdownParts(targetDateText) {
+  const now = new Date();
+  const target = new Date(targetDateText);
+  const diff = target.getTime() - now.getTime();
+
+  if (Number.isNaN(target.getTime())) {
+    return { days: 0, hours: 0, minutes: 0, status: "日期設定錯誤" };
+  }
+
+  if (diff <= 0) {
+    return { days: 0, hours: 0, minutes: 0, status: "旅程已開始" };
+  }
+
+  const totalMinutes = Math.floor(diff / 1000 / 60);
+  const days = Math.floor(totalMinutes / 60 / 24);
+  const hours = Math.floor((totalMinutes - days * 24 * 60) / 60);
+  const minutes = totalMinutes % 60;
+
+  return { days, hours, minutes, status: "距離出發" };
+}
+
+function formatTripDateRange() {
+  return "2026/06/19 ～ 2026/06/23";
+}
+
+function renderCountdownCenter() {
+  const countdown = getCountdownParts(tripInfo.startDate);
+
+  return `
+    <section class="countdown-center">
+      <div class="countdown-main">
+        <div class="countdown-label">✈️ ${countdown.status}</div>
+        <div class="countdown-number">${countdown.days}</div>
+        <div class="countdown-unit">天</div>
+        <div class="countdown-time">${countdown.hours} 小時 ${countdown.minutes} 分鐘</div>
+      </div>
+
+      <div class="trip-summary-card">
+        <div class="trip-summary-title">${tripInfo.tripName}</div>
+        <div class="trip-summary-subtitle">${tripInfo.destination}</div>
+        <div class="trip-summary-date">${formatTripDateRange()}</div>
+      </div>
+
+      <div class="trip-mini-grid">
+        <button class="trip-mini-card" type="button" onclick="openGoogleMap('${tripInfo.hotel}')">
+          <span>🏨</span>
+          <strong>飯店</strong>
+          <small>LiVEMAX 櫻通口</small>
+        </button>
+
+        <button class="trip-mini-card" type="button" onclick="openGoogleMap('中部國際機場')">
+          <span>🛫</span>
+          <strong>去程 ${tripInfo.outboundFlight}</strong>
+          <small>06/19 09:00</small>
+        </button>
+
+        <button class="trip-mini-card" type="button" onclick="openGoogleMap('中部國際機場')">
+          <span>🛬</span>
+          <strong>回程 ${tripInfo.returnFlight}</strong>
+          <small>06/23 13:45</small>
+        </button>
+      </div>
+    </section>
+  `;
+}
+
+function renderWeatherShortcuts() {
+  contentPage.innerHTML += `
+    <div class="countdown-detail-card">
+      <h3>☀️ 天氣快捷</h3>
+      <p>點選後會開啟 Google 搜尋天氣資訊。</p>
+      <div class="weather-grid">
+        <button type="button" onclick="openWeatherSearch('名古屋 天氣')">名古屋天氣</button>
+        <button type="button" onclick="openWeatherSearch('犬山 天氣')">犬山天氣</button>
+        <button type="button" onclick="openWeatherSearch('LEGOLAND Japan 天氣')">樂高樂園天氣</button>
+        <button type="button" onclick="openWeatherSearch('中部國際機場 天氣')">中部機場天氣</button>
+      </div>
+    </div>
+  `;
+}
+
+function openWeatherSearch(query) {
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
+}
+
+function renderCountdownDetail() {
+  const countdown = getCountdownParts(tripInfo.startDate);
+
+  contentPage.innerHTML += `
+    <div class="countdown-detail-card">
+      <h3>✈️ 行前倒數</h3>
+      <div class="big-countdown-row">
+        <span>${countdown.days}</span>
+        <strong>天</strong>
+        <small>${countdown.hours} 小時 ${countdown.minutes} 分鐘</small>
+      </div>
+    </div>
+
+    <div class="countdown-detail-card">
+      <h3>🧳 旅遊資訊</h3>
+      <div class="info-list">
+        <div><span>目的地</span><strong>${tripInfo.destination}</strong></div>
+        <div><span>旅遊日期</span><strong>${formatTripDateRange()}</strong></div>
+        <div><span>飯店</span><strong>${tripInfo.hotel}</strong></div>
+        <div><span>去程航班</span><strong>${tripInfo.outboundFlight}｜06/19 09:00 → 12:55</strong></div>
+        <div><span>回程航班</span><strong>${tripInfo.returnFlight}｜06/23 13:45 → 15:50</strong></div>
+      </div>
+    </div>
+  `;
+
+  renderWeatherShortcuts();
+}
+
 
 /*
   V13 LINE 聯絡人設定版：
@@ -19,6 +143,12 @@ const menuItems = [
     subtitle: "管理我的行程",
     icon: "./assets/icons/icon-itinerary.png",
     module: "行程表"
+  },
+  {
+    title: "行前倒數",
+    subtitle: "出發資訊中心",
+    icon: "./assets/icons/icon-navigation.png",
+    module: "行前倒數"
   },
   {
     title: "聯絡 (LINE)",
@@ -541,7 +671,7 @@ function escapeHtml(text) {
 function renderHome() {
   currentOpenDay = null;
   isEditingItinerary = false;
-  homePage.innerHTML = "";
+  homePage.innerHTML = renderCountdownCenter();
   contentPage.classList.add("hidden");
   homePage.classList.remove("hidden");
 
@@ -572,7 +702,8 @@ function openModule(name) {
     <h2>${name}</h2>
   `;
 
-  if (name === "行程表") renderItinerary();
+  if (name === "行前倒數") renderCountdownDetail();
+  else if (name === "行程表") renderItinerary();
   else if (name === "通話(LINE)") renderLine();
   else if (name === "景點分類") renderCategories();
   else if (name === "導航") renderNavigation();
