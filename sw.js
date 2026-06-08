@@ -1,11 +1,58 @@
+const CACHE_NAME = "yao-travel-v17-realtime-sync-cachefix-20260608";
+
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./firebase.js",
+  "./manifest.json"
+];
+
 self.addEventListener("install", event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open("yao-travel-v9-final").then(cache => {
-      return cache.addAll(["./", "./index.html", "./style.css", "./app.js", "./manifest.json"]);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES))
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", event => {
-  event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+  const requestUrl = new URL(event.request.url);
+
+  // Firebase and Google CDN should always use network.
+  if (
+    requestUrl.hostname.includes("firebase") ||
+    requestUrl.hostname.includes("googleapis") ||
+    requestUrl.hostname.includes("gstatic")
+  ) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // For core app files, try network first to avoid old JS/CSS on iPhone.
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          if (event.request.method === "GET") {
+            cache.put(event.request, responseClone);
+          }
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request))
+  );
 });

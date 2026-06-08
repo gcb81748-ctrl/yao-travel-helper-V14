@@ -1,3 +1,4 @@
+console.log("V17_CACHEFIX_ACTIVE app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");

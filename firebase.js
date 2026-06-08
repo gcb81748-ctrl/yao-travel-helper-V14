@@ -70,3 +70,5 @@ window.cloudListenItineraries = function (onData, onError) {
     }
   );
 };
+
+console.log("V17_CACHEFIX_ACTIVE Firebase realtime listener loaded");
