@@ -1,4 +1,4 @@
-const CACHE_NAME = "yao-travel-v17-realtime-sync-cachefix-20260608";
+const CACHE_NAME = "yao-travel-v17-2-day-order-fix-20260608";
 
 const APP_FILES = [
   "./",

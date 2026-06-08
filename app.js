@@ -1,4 +1,4 @@
-console.log("V17_CACHEFIX_ACTIVE app.js loaded");
+console.log("V17.2_DAY_ORDER_FIX app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
@@ -584,6 +584,21 @@ function openModule(name) {
   else if (name === "我的收藏") renderFavorites();
 }
 
+
+function getDayNumberFromTitle(dayTitle) {
+  const match = String(dayTitle).match(/Day\s*(\d+)/i);
+  return match ? Number(match[1]) : 999;
+}
+
+function getSortedDayKeys(data) {
+  return Object.keys(data).sort((a, b) => getDayNumberFromTitle(a) - getDayNumberFromTitle(b));
+}
+
+function getDayDisplayTitle(dayTitle) {
+  return String(dayTitle).replace(/^Day\s*\d+\s*[：:]\s*/, "");
+}
+
+
 function renderItinerary() {
   const data = getItineraries();
 
@@ -596,15 +611,16 @@ function renderItinerary() {
     </div>
   `;
 
-  Object.keys(data).forEach((day, index) => {
+  getSortedDayKeys(data).forEach((day) => {
     const items = data[day];
+    const dayNumber = getDayNumberFromTitle(day);
     const btn = document.createElement("button");
     btn.className = "day-card";
     btn.type = "button";
     btn.innerHTML = `
       <div class="day-card-top">
-        <span class="day-badge">Day ${index + 1}</span>
-        <span class="day-title">${day.replace(`Day ${index + 1}：`, "")}</span>
+        <span class="day-badge">Day ${dayNumber}</span>
+        <span class="day-title">${getDayDisplayTitle(day)}</span>
       </div>
       <div class="day-summary">${items.length} 個行程項目・點擊查看時間軸</div>
     `;
