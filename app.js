@@ -1,4 +1,4 @@
-console.log("V17.2_DAY_ORDER_FIX app.js loaded");
+console.log("V17.3_DAY_ORDER_HARDFIX app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
@@ -585,19 +585,51 @@ function openModule(name) {
 }
 
 
+
+
+
+const FIXED_DAY_ORDER = [
+  "Day 1：抵達・榮町之夜",
+  "Day 2：武士與書香 (週六)",
+  "Day 3：古意犬山・千年神宮 (週日)",
+  "Day 4：樂高樂園・冒險之日",
+  "Day 5：最後採買・歸途"
+];
+
+function normalizeDayTitle(dayTitle) {
+  return String(dayTitle || "").replace(/\s+/g, " ").trim();
+}
+
 function getDayNumberFromTitle(dayTitle) {
-  const match = String(dayTitle).match(/Day\s*(\d+)/i);
+  const match = normalizeDayTitle(dayTitle).match(/Day\s*(\d+)/i);
   return match ? Number(match[1]) : 999;
 }
 
-function getSortedDayKeys(data) {
-  return Object.keys(data).sort((a, b) => getDayNumberFromTitle(a) - getDayNumberFromTitle(b));
-}
-
 function getDayDisplayTitle(dayTitle) {
-  return String(dayTitle).replace(/^Day\s*\d+\s*[：:]\s*/, "");
+  return normalizeDayTitle(dayTitle).replace(/^Day\s*\d+\s*[：:]\s*/, "");
 }
 
+function getOrderedDayKeys(data) {
+  const keys = Object.keys(data || {});
+  const used = new Set();
+  const result = [];
+
+  FIXED_DAY_ORDER.forEach(expected => {
+    const expectedNo = getDayNumberFromTitle(expected);
+    const found = keys.find(key => getDayNumberFromTitle(key) === expectedNo);
+    if (found) {
+      result.push(found);
+      used.add(found);
+    }
+  });
+
+  keys
+    .filter(key => !used.has(key))
+    .sort((a, b) => getDayNumberFromTitle(a) - getDayNumberFromTitle(b))
+    .forEach(key => result.push(key));
+
+  return result;
+}
 
 function renderItinerary() {
   const data = getItineraries();
@@ -611,9 +643,10 @@ function renderItinerary() {
     </div>
   `;
 
-  getSortedDayKeys(data).forEach((day) => {
-    const items = data[day];
+  getOrderedDayKeys(data).forEach((day) => {
+    const items = data[day] || [];
     const dayNumber = getDayNumberFromTitle(day);
+
     const btn = document.createElement("button");
     btn.className = "day-card";
     btn.type = "button";

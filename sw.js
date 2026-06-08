@@ -1,11 +1,11 @@
-const CACHE_NAME = "yao-travel-v17-2-day-order-fix-20260608";
+const CACHE_NAME = "yao-travel-v17-3-day-order-hardfix-20260608";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./style.css",
-  "./app.js",
-  "./firebase.js",
+  "./style.css?v=173",
+  "./app.js?v=173",
+  "./firebase.js?v=173",
   "./manifest.json"
 ];
 
