@@ -1,4 +1,4 @@
-console.log("V25_PASSWORD_GATE app.js loaded");
+console.log("V25.2_NEARBY_FULL_FIX app.js loaded");
 
 /* ===== V25 網站密碼門禁 ===== */
 const SITE_PASSWORD = "1017";
@@ -1353,119 +1353,110 @@ function renderLocationShare() {
   startMemberLocationListener();
 }
 
+
+/* ===== V25.2 附近搜尋完整覆蓋修正版 ===== */
+function openNearbyMapSearch(query) {
+  const fallbackQuery = `${query} 愛知 名古屋`;
+
+  if (!navigator.geolocation) {
+    openGoogleMap(fallbackQuery);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const url = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},16z`;
+      window.open(url, "_blank");
+    },
+    () => {
+      alert("無法取得目前位置，將改用名古屋地區搜尋。");
+      openGoogleMap(fallbackQuery);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 12000,
+      maximumAge: 60000
+    }
+  );
+}
+
+function renderNearbyDirectPage(title, description, items) {
+  contentPage.innerHTML += `
+    <div class="nearby-direct-panel">
+      <div class="nearby-direct-title">${title}</div>
+      <div class="nearby-direct-desc">${description}</div>
+      <button class="nearby-main-search-btn" type="button" id="nearbyMainSearchBtn">
+        📍 搜尋目前位置附近
+      </button>
+      <div class="nearby-direct-grid"></div>
+    </div>
+  `;
+
+  const mainBtn = document.getElementById("nearbyMainSearchBtn");
+  if (mainBtn && items[0]) {
+    mainBtn.onclick = () => openNearbyMapSearch(items[0].query);
+  }
+
+  const grid = contentPage.querySelector(".nearby-direct-grid");
+  if (!grid) return;
+
+  items.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "nearby-direct-card";
+    btn.type = "button";
+    btn.innerHTML = `
+      <span>${item.icon}</span>
+      <strong>${item.label}</strong>
+      <small>${item.query}</small>
+    `;
+    btn.onclick = () => openNearbyMapSearch(item.query);
+    grid.appendChild(btn);
+  });
+}
+
 function renderNearbySpots() {
-  renderNearbySearchPage(
-    "附近景點搜尋",
-    "依照目前位置快速搜尋周邊景點，適合旅途中臨時找備案。",
+  renderNearbyDirectPage(
+    "附近景點",
+    "直接依照你目前 GPS 位置搜尋附近景點。第一次使用請允許定位權限。",
     [
-      {
-        icon: "🌤️",
-        title: "室外景點",
-        items: [
-          { icon: "🏯", label: "熱門觀光景點", query: "附近 觀光景點 評分3以上" },
-          { icon: "🌸", label: "公園散步", query: "附近 公園 評分3以上" },
-          { icon: "📸", label: "拍照景點", query: "附近 拍照景點" },
-          { icon: "🏞️", label: "自然景點", query: "附近 自然景點" }
-        ]
-      },
-      {
-        icon: "🏛️",
-        title: "室內景點",
-        items: [
-          { icon: "🏛️", label: "博物館", query: "附近 博物館 評分3以上" },
-          { icon: "🎨", label: "美術館", query: "附近 美術館 評分3以上" },
-          { icon: "🛍️", label: "商場逛街", query: "附近 購物商場" },
-          { icon: "☔", label: "雨天備案", query: "附近 室內景點" }
-        ]
-      },
-      {
-        icon: "✨",
-        title: "快速推薦",
-        items: [
-          { icon: "⭐", label: "高評價景點", query: "附近 旅遊景點 評分4以上" },
-          { icon: "🚶", label: "步行可到", query: "附近 景點" },
-          { icon: "🌃", label: "夜景", query: "附近 夜景 景點" },
-          { icon: "👨‍👩‍👧", label: "親子景點", query: "附近 親子景點" }
-        ]
-      }
+      { icon: "🏯", label: "附近景點", query: "附近 景點" },
+      { icon: "⭐", label: "高評價景點", query: "附近 旅遊景點 評分4以上" },
+      { icon: "☔", label: "室內景點", query: "附近 室內景點" },
+      { icon: "🌸", label: "公園散步", query: "附近 公園" },
+      { icon: "📸", label: "拍照景點", query: "附近 拍照景點" },
+      { icon: "🛍️", label: "購物商場", query: "附近 購物商場" }
     ]
   );
 }
 
 function renderNearbyRestaurants() {
-  renderNearbySearchPage(
-    "附近餐廳搜尋",
-    "依照目前位置快速搜尋餐廳，Google Maps 會顯示評價、照片與營業時間。",
+  renderNearbyDirectPage(
+    "附近餐廳",
+    "直接依照你目前 GPS 位置搜尋附近餐廳與名古屋美食。",
     [
-      {
-        icon: "🍜",
-        title: "名古屋美食",
-        items: [
-          { icon: "🍜", label: "拉麵", query: "附近 拉麵 評分3以上" },
-          { icon: "🍱", label: "鰻魚飯", query: "附近 鰻魚飯 評分3以上" },
-          { icon: "🥩", label: "燒肉", query: "附近 燒肉 評分3以上" },
-          { icon: "🍛", label: "味噌豬排", query: "附近 味噌豬排" }
-        ]
-      },
-      {
-        icon: "☕",
-        title: "輕食咖啡",
-        items: [
-          { icon: "☕", label: "咖啡廳", query: "附近 咖啡廳 評分3以上" },
-          { icon: "🥪", label: "早餐", query: "附近 早餐 咖啡廳" },
-          { icon: "🍰", label: "甜點", query: "附近 甜點 評分3以上" },
-          { icon: "🍞", label: "麵包店", query: "附近 麵包店" }
-        ]
-      },
-      {
-        icon: "⭐",
-        title: "快速找餐廳",
-        items: [
-          { icon: "⭐", label: "高評價餐廳", query: "附近 餐廳 評分4以上" },
-          { icon: "👨‍👩‍👧", label: "適合多人", query: "附近 適合聚餐餐廳" },
-          { icon: "⏰", label: "營業中", query: "附近 營業中 餐廳" },
-          { icon: "💴", label: "平價美食", query: "附近 平價美食" }
-        ]
-      }
+      { icon: "🍽️", label: "附近餐廳", query: "附近 餐廳" },
+      { icon: "⭐", label: "高評價餐廳", query: "附近 餐廳 評分4以上" },
+      { icon: "🍜", label: "拉麵", query: "附近 拉麵" },
+      { icon: "🍱", label: "鰻魚飯", query: "附近 鰻魚飯" },
+      { icon: "🥩", label: "燒肉", query: "附近 燒肉" },
+      { icon: "☕", label: "咖啡廳", query: "附近 咖啡廳" }
     ]
   );
 }
 
 function renderNearbyShrines() {
-  renderNearbySearchPage(
-    "附近神社搜尋",
-    "依照目前位置快速搜尋神社、寺院、御守與御朱印相關地點。",
+  renderNearbyDirectPage(
+    "附近神社",
+    "直接依照你目前 GPS 位置搜尋附近神社、寺院、御守與御朱印。",
     [
-      {
-        icon: "⛩️",
-        title: "神社寺院",
-        items: [
-          { icon: "⛩️", label: "附近神社", query: "附近 神社" },
-          { icon: "🏮", label: "附近寺廟", query: "附近 寺廟" },
-          { icon: "🌸", label: "特色神社", query: "附近 特色神社" },
-          { icon: "📸", label: "拍照神社", query: "附近 拍照 神社" }
-        ]
-      },
-      {
-        icon: "🎐",
-        title: "御守御朱印",
-        items: [
-          { icon: "🎐", label: "御守", query: "附近 神社 御守" },
-          { icon: "📖", label: "御朱印", query: "附近 神社 御朱印" },
-          { icon: "💕", label: "戀愛御守", query: "附近 戀愛御守 神社" },
-          { icon: "💰", label: "開運金運", query: "附近 開運 金運 神社" }
-        ]
-      },
-      {
-        icon: "⭐",
-        title: "快速推薦",
-        items: [
-          { icon: "⭐", label: "高評價神社", query: "附近 神社 評分4以上" },
-          { icon: "🚶", label: "步行可到", query: "附近 神社" },
-          { icon: "🌲", label: "安靜參拜", query: "附近 安靜 神社" },
-          { icon: "🚌", label: "交通方便", query: "附近 交通方便 神社" }
-        ]
-      }
+      { icon: "⛩️", label: "附近神社", query: "附近 神社" },
+      { icon: "🏮", label: "附近寺廟", query: "附近 寺廟" },
+      { icon: "📖", label: "御朱印", query: "附近 神社 御朱印" },
+      { icon: "🎐", label: "御守", query: "附近 神社 御守" },
+      { icon: "💕", label: "戀愛御守", query: "附近 戀愛御守 神社" },
+      { icon: "⭐", label: "高評價神社", query: "附近 神社 評分4以上" }
     ]
   );
 }

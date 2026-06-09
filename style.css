@@ -1757,3 +1757,90 @@ body:not(.site-unlocked) .app-shell{
   font-size: 13px;
   font-weight: 900;
 }
+
+
+/* ===== V25.2 附近搜尋完整覆蓋修正版 ===== */
+.nearby-direct-panel{
+  border-radius:22px;
+  padding:16px;
+  margin-top:14px;
+  background:linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
+  box-shadow:
+    0 10px 22px rgba(85,45,60,.075),
+    inset 0 0 0 1px rgba(255,190,210,.25);
+}
+
+.nearby-direct-title{
+  color:#342630;
+  font-size:21px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.nearby-direct-desc{
+  color:#7e656f;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+.nearby-main-search-btn{
+  width:100%;
+  border:0;
+  border-radius:18px;
+  padding:15px 14px;
+  margin-bottom:14px;
+  background:linear-gradient(180deg,#ff96b8,#ff6c9f);
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  box-shadow:0 10px 20px rgba(255,108,159,.22);
+  cursor:pointer;
+}
+
+.nearby-direct-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.nearby-direct-card{
+  min-height:105px;
+  border:0;
+  border-radius:18px;
+  padding:12px 8px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  box-shadow:
+    0 8px 18px rgba(85,45,60,.06),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+  cursor:pointer;
+}
+
+.nearby-direct-card:active{
+  transform:scale(.97);
+}
+
+.nearby-direct-card span{
+  font-size:28px;
+  margin-bottom:6px;
+}
+
+.nearby-direct-card strong{
+  color:#342630;
+  font-size:14px;
+  font-weight:900;
+}
+
+.nearby-direct-card small{
+  color:#8b6e79;
+  font-size:10px;
+  font-weight:700;
+  margin-top:5px;
+  line-height:1.25;
+}
