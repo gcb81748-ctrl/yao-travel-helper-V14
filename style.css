@@ -1759,88 +1759,177 @@ body:not(.site-unlocked) .app-shell{
 }
 
 
-/* ===== V25.2 附近搜尋完整覆蓋修正版 ===== */
-.nearby-direct-panel{
-  border-radius:22px;
-  padding:16px;
-  margin-top:14px;
-  background:linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
+/* ===== V26 附近探索中心：重製版 ===== */
+.v26-nearby-hero{
+  border-radius:26px;
+  padding:18px;
+  margin-top:12px;
+  margin-bottom:14px;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255,156,194,.36), transparent 34%),
+    radial-gradient(circle at 92% 20%, rgba(255,222,166,.32), transparent 30%),
+    linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
   box-shadow:
-    0 10px 22px rgba(85,45,60,.075),
-    inset 0 0 0 1px rgba(255,190,210,.25);
+    0 12px 26px rgba(85,45,60,.085),
+    inset 0 0 0 1px rgba(255,190,210,.28);
 }
 
-.nearby-direct-title{
+.v26-nearby-kicker{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:6px 10px;
+  margin-bottom:10px;
+  color:#d94d7d;
+  background:#fff0f5;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.2px;
+  box-shadow:inset 0 0 0 1px rgba(255,150,185,.20);
+}
+
+.v26-nearby-title{
   color:#342630;
-  font-size:21px;
+  font-size:24px;
   font-weight:900;
   margin-bottom:8px;
 }
 
-.nearby-direct-desc{
+.v26-nearby-subtitle{
   color:#7e656f;
   font-size:13px;
-  font-weight:700;
+  font-weight:800;
   line-height:1.55;
   margin-bottom:14px;
 }
 
-.nearby-main-search-btn{
+.v26-nearby-main-btn{
   width:100%;
+  min-height:64px;
   border:0;
-  border-radius:18px;
-  padding:15px 14px;
-  margin-bottom:14px;
-  background:linear-gradient(180deg,#ff96b8,#ff6c9f);
+  border-radius:20px;
+  padding:14px;
+  background:linear-gradient(180deg,#ff96b8 0%,#ff6c9f 100%);
   color:#fff;
-  font-size:16px;
-  font-weight:900;
-  box-shadow:0 10px 20px rgba(255,108,159,.22);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 12px 24px rgba(255,108,159,.22);
   cursor:pointer;
 }
 
-.nearby-direct-grid{
+.v26-nearby-main-btn span{
+  font-size:24px;
+}
+
+.v26-nearby-main-btn strong{
+  font-size:16px;
+  font-weight:900;
+}
+
+.v26-nearby-main-btn:active,
+.v26-nearby-card:active{
+  transform:scale(.97);
+}
+
+.v26-nearby-tip{
+  margin-top:11px;
+  color:#8b6e79;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.45;
+  text-align:center;
+}
+
+.v26-nearby-sections{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.v26-nearby-section{
+  border-radius:24px;
+  padding:15px;
+  background:#fff8fb;
+  box-shadow:
+    0 10px 22px rgba(85,45,60,.06),
+    inset 0 0 0 1px rgba(255,190,210,.24);
+}
+
+.v26-nearby-section-title{
+  color:#d94d7d;
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.v26-nearby-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
 }
 
-.nearby-direct-card{
-  min-height:105px;
+.v26-nearby-card{
+  min-height:106px;
   border:0;
-  border-radius:18px;
+  border-radius:19px;
   padding:12px 8px;
-  background:#fff;
+  background:linear-gradient(180deg,#ffffff 0%,#fffafa 100%);
+  box-shadow:
+    0 8px 18px rgba(85,45,60,.065),
+    inset 0 0 0 1px rgba(255,190,210,.22);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   text-align:center;
-  box-shadow:
-    0 8px 18px rgba(85,45,60,.06),
-    inset 0 0 0 1px rgba(255,190,210,.22);
   cursor:pointer;
 }
 
-.nearby-direct-card:active{
-  transform:scale(.97);
+.v26-nearby-card span{
+  font-size:29px;
+  margin-bottom:7px;
 }
 
-.nearby-direct-card span{
-  font-size:28px;
-  margin-bottom:6px;
-}
-
-.nearby-direct-card strong{
+.v26-nearby-card strong{
   color:#342630;
   font-size:14px;
   font-weight:900;
+  line-height:1.25;
 }
 
-.nearby-direct-card small{
+.v26-nearby-card small{
+  margin-top:5px;
   color:#8b6e79;
   font-size:10px;
   font-weight:700;
-  margin-top:5px;
   line-height:1.25;
+}
+
+@media(max-width:380px){
+  .v26-nearby-grid{
+    gap:8px;
+  }
+
+  .v26-nearby-card{
+    min-height:98px;
+    padding:10px 6px;
+  }
+
+  .v26-nearby-title{
+    font-size:22px;
+  }
+
+  .v26-nearby-card span{
+    font-size:26px;
+  }
+
+  .v26-nearby-card strong{
+    font-size:13px;
+  }
+
+  .v26-nearby-card small{
+    font-size:9.5px;
+  }
 }

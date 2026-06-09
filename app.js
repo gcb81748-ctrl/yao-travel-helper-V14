@@ -1,4 +1,4 @@
-console.log("V25.2_NEARBY_FULL_FIX app.js loaded");
+console.log("V26_NEARBY_EXPLORE_CENTER app.js loaded");
 
 /* ===== V25 網站密碼門禁 ===== */
 const SITE_PASSWORD = "1017";
@@ -1354,8 +1354,8 @@ function renderLocationShare() {
 }
 
 
-/* ===== V25.2 附近搜尋完整覆蓋修正版 ===== */
-function openNearbyMapSearch(query) {
+/* ===== V26 附近探索中心：重製版 ===== */
+function openV26MapsSearch(query) {
   const fallbackQuery = `${query} 愛知 名古屋`;
 
   if (!navigator.geolocation) {
@@ -1382,83 +1382,148 @@ function openNearbyMapSearch(query) {
   );
 }
 
-function renderNearbyDirectPage(title, description, items) {
+function renderV26NearbyExploreCenter(type) {
+  const configs = {
+    spots: {
+      title: "附近景點",
+      subtitle: "依照目前位置直接開啟 Google Maps 搜尋附近景點。",
+      main: { icon: "📍", label: "搜尋目前位置附近景點", query: "附近 景點" },
+      groups: [
+        {
+          title: "快速探索",
+          items: [
+            { icon: "🏯", label: "附近景點", query: "附近 景點" },
+            { icon: "⭐", label: "高評價景點", query: "附近 旅遊景點 評分4以上" },
+            { icon: "☔", label: "室內景點", query: "附近 室內景點" },
+            { icon: "📸", label: "拍照景點", query: "附近 拍照景點" }
+          ]
+        },
+        {
+          title: "散步購物",
+          items: [
+            { icon: "🌸", label: "公園散步", query: "附近 公園" },
+            { icon: "🛍️", label: "購物商場", query: "附近 購物商場" },
+            { icon: "🏛️", label: "博物館", query: "附近 博物館" },
+            { icon: "🌃", label: "夜景景點", query: "附近 夜景 景點" }
+          ]
+        }
+      ]
+    },
+    restaurants: {
+      title: "附近餐廳",
+      subtitle: "依照目前位置搜尋附近餐廳、咖啡廳與名古屋美食。",
+      main: { icon: "🍽️", label: "搜尋目前位置附近餐廳", query: "附近 餐廳" },
+      groups: [
+        {
+          title: "熱門餐食",
+          items: [
+            { icon: "🍽️", label: "附近餐廳", query: "附近 餐廳" },
+            { icon: "⭐", label: "高評價餐廳", query: "附近 餐廳 評分4以上" },
+            { icon: "🍜", label: "拉麵", query: "附近 拉麵" },
+            { icon: "🥩", label: "燒肉", query: "附近 燒肉" }
+          ]
+        },
+        {
+          title: "名古屋美食",
+          items: [
+            { icon: "🍱", label: "鰻魚飯", query: "附近 鰻魚飯" },
+            { icon: "🍛", label: "味噌豬排", query: "附近 味噌豬排" },
+            { icon: "☕", label: "咖啡廳", query: "附近 咖啡廳" },
+            { icon: "🍰", label: "甜點", query: "附近 甜點" }
+          ]
+        }
+      ]
+    },
+    shrines: {
+      title: "附近神社",
+      subtitle: "依照目前位置搜尋附近神社、寺院、御守與御朱印。",
+      main: { icon: "⛩️", label: "搜尋目前位置附近神社", query: "附近 神社" },
+      groups: [
+        {
+          title: "參拜搜尋",
+          items: [
+            { icon: "⛩️", label: "附近神社", query: "附近 神社" },
+            { icon: "🏮", label: "附近寺廟", query: "附近 寺廟" },
+            { icon: "⭐", label: "高評價神社", query: "附近 神社 評分4以上" },
+            { icon: "🌲", label: "安靜神社", query: "附近 安靜 神社" }
+          ]
+        },
+        {
+          title: "御守御朱印",
+          items: [
+            { icon: "📖", label: "御朱印", query: "附近 神社 御朱印" },
+            { icon: "🎐", label: "御守", query: "附近 神社 御守" },
+            { icon: "💕", label: "戀愛御守", query: "附近 戀愛御守 神社" },
+            { icon: "💰", label: "開運金運", query: "附近 開運 金運 神社" }
+          ]
+        }
+      ]
+    }
+  };
+
+  const config = configs[type] || configs.spots;
+
   contentPage.innerHTML += `
-    <div class="nearby-direct-panel">
-      <div class="nearby-direct-title">${title}</div>
-      <div class="nearby-direct-desc">${description}</div>
-      <button class="nearby-main-search-btn" type="button" id="nearbyMainSearchBtn">
-        📍 搜尋目前位置附近
+    <div class="v26-nearby-hero">
+      <div class="v26-nearby-kicker">V26 Nearby Explore</div>
+      <div class="v26-nearby-title">${config.title}</div>
+      <div class="v26-nearby-subtitle">${config.subtitle}</div>
+      <button class="v26-nearby-main-btn" type="button" id="v26NearbyMainBtn">
+        <span>${config.main.icon}</span>
+        <strong>${config.main.label}</strong>
       </button>
-      <div class="nearby-direct-grid"></div>
+      <div class="v26-nearby-tip">
+        第一次使用會詢問定位權限；若定位失敗，會自動改用名古屋地區搜尋。
+      </div>
     </div>
+    <div class="v26-nearby-sections" id="v26NearbySections"></div>
   `;
 
-  const mainBtn = document.getElementById("nearbyMainSearchBtn");
-  if (mainBtn && items[0]) {
-    mainBtn.onclick = () => openNearbyMapSearch(items[0].query);
+  const mainBtn = document.getElementById("v26NearbyMainBtn");
+  if (mainBtn) {
+    mainBtn.onclick = () => openV26MapsSearch(config.main.query);
   }
 
-  const grid = contentPage.querySelector(".nearby-direct-grid");
-  if (!grid) return;
+  const sections = document.getElementById("v26NearbySections");
+  if (!sections) return;
 
-  items.forEach(item => {
-    const btn = document.createElement("button");
-    btn.className = "nearby-direct-card";
-    btn.type = "button";
-    btn.innerHTML = `
-      <span>${item.icon}</span>
-      <strong>${item.label}</strong>
-      <small>${item.query}</small>
+  config.groups.forEach(group => {
+    const section = document.createElement("div");
+    section.className = "v26-nearby-section";
+    section.innerHTML = `
+      <div class="v26-nearby-section-title">${group.title}</div>
+      <div class="v26-nearby-grid"></div>
     `;
-    btn.onclick = () => openNearbyMapSearch(item.query);
-    grid.appendChild(btn);
+
+    const grid = section.querySelector(".v26-nearby-grid");
+
+    group.items.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "v26-nearby-card";
+      btn.type = "button";
+      btn.innerHTML = `
+        <span>${item.icon}</span>
+        <strong>${item.label}</strong>
+        <small>${item.query}</small>
+      `;
+      btn.onclick = () => openV26MapsSearch(item.query);
+      grid.appendChild(btn);
+    });
+
+    sections.appendChild(section);
   });
 }
 
 function renderNearbySpots() {
-  renderNearbyDirectPage(
-    "附近景點",
-    "直接依照你目前 GPS 位置搜尋附近景點。第一次使用請允許定位權限。",
-    [
-      { icon: "🏯", label: "附近景點", query: "附近 景點" },
-      { icon: "⭐", label: "高評價景點", query: "附近 旅遊景點 評分4以上" },
-      { icon: "☔", label: "室內景點", query: "附近 室內景點" },
-      { icon: "🌸", label: "公園散步", query: "附近 公園" },
-      { icon: "📸", label: "拍照景點", query: "附近 拍照景點" },
-      { icon: "🛍️", label: "購物商場", query: "附近 購物商場" }
-    ]
-  );
+  renderV26NearbyExploreCenter("spots");
 }
 
 function renderNearbyRestaurants() {
-  renderNearbyDirectPage(
-    "附近餐廳",
-    "直接依照你目前 GPS 位置搜尋附近餐廳與名古屋美食。",
-    [
-      { icon: "🍽️", label: "附近餐廳", query: "附近 餐廳" },
-      { icon: "⭐", label: "高評價餐廳", query: "附近 餐廳 評分4以上" },
-      { icon: "🍜", label: "拉麵", query: "附近 拉麵" },
-      { icon: "🍱", label: "鰻魚飯", query: "附近 鰻魚飯" },
-      { icon: "🥩", label: "燒肉", query: "附近 燒肉" },
-      { icon: "☕", label: "咖啡廳", query: "附近 咖啡廳" }
-    ]
-  );
+  renderV26NearbyExploreCenter("restaurants");
 }
 
 function renderNearbyShrines() {
-  renderNearbyDirectPage(
-    "附近神社",
-    "直接依照你目前 GPS 位置搜尋附近神社、寺院、御守與御朱印。",
-    [
-      { icon: "⛩️", label: "附近神社", query: "附近 神社" },
-      { icon: "🏮", label: "附近寺廟", query: "附近 寺廟" },
-      { icon: "📖", label: "御朱印", query: "附近 神社 御朱印" },
-      { icon: "🎐", label: "御守", query: "附近 神社 御守" },
-      { icon: "💕", label: "戀愛御守", query: "附近 戀愛御守 神社" },
-      { icon: "⭐", label: "高評價神社", query: "附近 神社 評分4以上" }
-    ]
-  );
+  renderV26NearbyExploreCenter("shrines");
 }
 
 function renderNearbySearchButtons(options) {
@@ -1471,7 +1536,7 @@ function renderNearbySearchButtons(options) {
     btn.className = "small-card";
     btn.type = "button";
     btn.textContent = query;
-    btn.onclick = () => openNearbyMapSearch(query);
+    btn.onclick = () => openV26MapsSearch(query);
     grid.appendChild(btn);
   });
 
