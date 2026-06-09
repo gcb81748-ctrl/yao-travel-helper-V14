@@ -1,4 +1,10 @@
-console.log("V26_NEARBY_EXPLORE_CENTER app.js loaded");
+console.log("V27_CODE_CLEAN_STABLE app.js loaded");
+/*
+  V27 程式碼整理穩定版
+  基礎：使用者已測試成功的 V26
+  保留：密碼門禁、Firebase、行程表、團員定位、行前倒數、附近探索中心
+*/
+
 
 /* ===== V25 網站密碼門禁 ===== */
 const SITE_PASSWORD = "1017";

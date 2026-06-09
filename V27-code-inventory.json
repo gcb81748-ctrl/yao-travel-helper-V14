@@ -1,0 +1,22 @@
+{
+  "version": "V27 code clean stable",
+  "source_zip": "yao-travel-helper-v26-nearby-explore-center(1).zip",
+  "function_count": 68,
+  "duplicate_functions_detected": [],
+  "preserved_features": [
+    "密碼門禁 1017",
+    "Firebase 行程同步",
+    "團員定位分享",
+    "行前倒數中心",
+    "V26 附近探索中心",
+    "我的收藏",
+    "目前 UI"
+  ],
+  "updated_files": [
+    "app.js",
+    "index.html",
+    "sw.js",
+    "README-V27-CODE-CLEAN-STABLE.txt",
+    "V27-code-inventory.json"
+  ]
+}
