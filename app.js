@@ -1,4 +1,51 @@
-console.log("V20_MEMBER_LOCATION_SHARE app.js loaded");
+console.log("V25_PASSWORD_GATE app.js loaded");
+
+/* ===== V25 網站密碼門禁 ===== */
+const SITE_PASSWORD = "1017";
+const PASSWORD_SESSION_KEY = "yaoTravelPasswordPassedV25";
+
+function unlockSite() {
+  document.body.classList.add("site-unlocked");
+  const gate = document.getElementById("passwordGate");
+  if (gate) gate.classList.add("password-gate-hidden");
+}
+
+function checkSitePassword() {
+  const input = document.getElementById("passwordInput");
+  const error = document.getElementById("passwordError");
+  const value = input ? input.value.trim() : "";
+
+  if (value === SITE_PASSWORD) {
+    sessionStorage.setItem(PASSWORD_SESSION_KEY, "true");
+    unlockSite();
+    return;
+  }
+
+  if (error) error.textContent = "密碼錯誤，請重新輸入。";
+  if (input) {
+    input.value = "";
+    input.focus();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.getElementById("passwordButton");
+  const input = document.getElementById("passwordInput");
+
+  if (sessionStorage.getItem(PASSWORD_SESSION_KEY) === "true") {
+    unlockSite();
+    return;
+  }
+
+  if (button) button.addEventListener("click", checkSitePassword);
+  if (input) {
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") checkSitePassword();
+    });
+    setTimeout(() => input.focus(), 300);
+  }
+});
+
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
@@ -1305,81 +1352,6 @@ function renderLocationShare() {
 
   startMemberLocationListener();
 }
-
-
-/* ===== 附近搜尋修正：補回 Google Maps 定位搜尋工具 ===== */
-function openNearbyMapSearch(query) {
-  const fallbackQuery = query + " 愛知 名古屋";
-
-  if (!navigator.geolocation) {
-    openGoogleMap(fallbackQuery);
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      const url = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},15z`;
-      window.open(url, "_blank");
-    },
-    () => {
-      alert("無法取得目前位置，將改用一般 Google Maps 搜尋。");
-      openGoogleMap(fallbackQuery);
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000
-    }
-  );
-}
-
-function renderNearbySearchPage(title, description, groups) {
-  contentPage.innerHTML += `
-    <div class="nearby-header">
-      <div class="nearby-title">${title}</div>
-      <div class="nearby-desc">${description}</div>
-    </div>
-    <div class="note">
-      點選下方按鈕後，系統會向手機要求定位權限，再用 Google Maps 依照目前位置搜尋。
-    </div>
-    <div class="nearby-section-list"></div>
-  `;
-
-  const list = contentPage.querySelector(".nearby-section-list");
-  if (!list) return;
-
-  groups.forEach(group => {
-    const section = document.createElement("div");
-    section.className = "nearby-section";
-    section.innerHTML = `
-      <div class="nearby-section-title">
-        <span>${group.icon}</span>
-        <strong>${group.title}</strong>
-      </div>
-      <div class="nearby-button-grid"></div>
-    `;
-
-    const grid = section.querySelector(".nearby-button-grid");
-
-    group.items.forEach(item => {
-      const btn = document.createElement("button");
-      btn.className = "nearby-search-card";
-      btn.type = "button";
-      btn.innerHTML = `
-        <span class="nearby-card-icon">${item.icon}</span>
-        <span class="nearby-card-title">${item.label}</span>
-        <span class="nearby-card-subtitle">${item.query}</span>
-      `;
-      btn.onclick = () => openNearbyMapSearch(item.query);
-      grid.appendChild(btn);
-    });
-
-    list.appendChild(section);
-  });
-}
-
 
 function renderNearbySpots() {
   renderNearbySearchPage(
