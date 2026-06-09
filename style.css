@@ -1933,3 +1933,25 @@ body:not(.site-unlocked) .app-shell{
     font-size:9.5px;
   }
 }
+
+
+/* ===== V28 聯絡 LINE 名單完整版 ===== */
+.line-contact-panel{border-radius:26px;padding:18px;margin-top:12px;background:radial-gradient(circle at 18% 10%,rgba(43,203,89,.16),transparent 32%),radial-gradient(circle at 95% 20%,rgba(255,156,194,.22),transparent 32%),linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);box-shadow:0 12px 26px rgba(85,45,60,.085),inset 0 0 0 1px rgba(255,190,210,.28);}
+.line-contact-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.line-contact-kicker{display:inline-flex;border-radius:999px;padding:6px 10px;margin-bottom:9px;color:#0a9d42;background:#eafff1;font-size:11px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(43,203,89,.18);}
+.line-contact-title{color:#342630;font-size:24px;font-weight:900;margin-bottom:7px;}
+.line-contact-desc{color:#7e656f;font-size:13px;font-weight:800;line-height:1.55;}
+.line-help-btn{border:0;border-radius:999px;padding:9px 12px;background:#fff;color:#d94d7d;font-size:12px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,150,185,.26);cursor:pointer;flex:0 0 auto;}
+.line-contact-search{width:100%;border:0;outline:none;border-radius:18px;padding:14px 15px;margin-bottom:14px;background:#fff3f7;color:#342630;font-size:14px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,150,185,.22);}
+.line-contact-list{display:flex;flex-direction:column;gap:12px;}
+.line-contact-card{display:grid;grid-template-columns:48px 1fr;gap:12px;border-radius:22px;padding:14px;background:#fff;box-shadow:0 8px 18px rgba(85,45,60,.06),inset 0 0 0 1px rgba(255,190,210,.22);}
+.line-avatar{width:48px;height:48px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#20df73,#0dbb53);color:#fff;font-size:20px;font-weight:900;box-shadow:0 8px 18px rgba(13,187,83,.18);}
+.line-contact-info{min-width:0;}
+.line-contact-name{color:#342630;font-size:17px;font-weight:900;}
+.line-contact-id{margin-top:4px;color:#5c4c55;font-size:13px;font-weight:900;word-break:break-all;}
+.line-contact-note{margin-top:3px;color:#9c808c;font-size:11px;font-weight:800;}
+.line-contact-actions{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px;}
+.line-contact-actions button{border:0;border-radius:16px;padding:11px 10px;font-size:13px;font-weight:900;cursor:pointer;}
+.line-contact-actions button:first-child{background:#fff3f7;color:#d94d7d;box-shadow:inset 0 0 0 1px rgba(255,150,185,.24);}
+.line-contact-actions button:last-child{background:linear-gradient(180deg,#20df73,#0dbb53);color:#fff;box-shadow:0 8px 18px rgba(13,187,83,.18);}
+@media(max-width:380px){.line-contact-header{flex-direction:column}.line-help-btn{width:100%}.line-contact-actions{grid-template-columns:1fr}}
