@@ -1,4 +1,4 @@
-console.log("V28_LINE_CONTACT_CENTER app.js loaded");
+console.log("V29_CLEAN_LINE_CONTACT_CENTER app.js loaded");
 /*
   V27 程式碼整理穩定版
   基礎：使用者已測試成功的 V26
@@ -756,7 +756,7 @@ function openModule(name) {
   `;
 
     if (name === "聯絡(LINE)" || name === "聯絡 LINE" || name === "LINE聯絡" || name === "LINE 聯絡" || name === "聯絡人") {
-    renderLineContactCenter();
+    renderV29LineContactCenter();
     return;
   }
 
@@ -1326,97 +1326,110 @@ function renderMemberLocationList() {
 }
 
 
-/* ===== V28 聯絡 LINE 名單完整版 ===== */
-const lineContacts = [
-  { name: "堯", lineId: "love720930", note: "團長" },
-  { name: "靜雯", lineId: "0953310753", note: "團員" },
-  { name: "阿胖", lineId: "yao_0615", note: "團員" },
-  { name: "靖娟ㄤ", lineId: "sn1204s", note: "團員" },
-  { name: "靖娟", lineId: "jeantsai19", note: "團員" },
-  { name: "靖娟兒", lineId: "gao0308de", note: "團員" },
-  { name: "潔茹", lineId: "02029519", note: "團員" },
-  { name: "曼寧", lineId: "manninglee", note: "團員" },
-  { name: "嘉安", lineId: "ann9050", note: "團員" },
-  { name: "淑蓉", lineId: "sande0722", note: "團員" }
+/* ===== V29 CLEAN LINE CONTACT CENTER ===== */
+const v29LineContacts = [
+  { name: "堯", lineId: "love720930", role: "團長" },
+  { name: "靜雯", lineId: "0953310753", role: "團員" },
+  { name: "阿胖", lineId: "yao_0615", role: "團員" },
+  { name: "靖娟ㄤ", lineId: "sn1204s", role: "團員" },
+  { name: "靖娟", lineId: "jeantsai19", role: "團員" },
+  { name: "靖娟兒", lineId: "gao0308de", role: "團員" },
+  { name: "潔茹", lineId: "02029519", role: "團員" },
+  { name: "曼寧", lineId: "manninglee", role: "團員" },
+  { name: "嘉安", lineId: "ann9050", role: "團員" },
+  { name: "淑蓉", lineId: "sande0722", role: "團員" }
 ];
 
-function copyLineId(lineId) {
-  if (!lineId) return alert("此團員尚未設定 LINE ID。");
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(lineId).then(
-      () => alert(`已複製 LINE ID：${lineId}`),
-      () => fallbackCopyLineId(lineId)
-    );
-  } else {
-    fallbackCopyLineId(lineId);
+function v29CopyText(text, label) {
+  if (!text) {
+    alert("尚未設定 LINE ID。");
+    return;
   }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert(`已複製${label || "內容"}：${text}`))
+      .catch(() => v29FallbackCopyText(text, label));
+    return;
+  }
+
+  v29FallbackCopyText(text, label);
 }
 
-function fallbackCopyLineId(lineId) {
-  const temp = document.createElement("input");
-  temp.value = lineId;
-  document.body.appendChild(temp);
-  temp.select();
+function v29FallbackCopyText(text, label) {
+  const input = document.createElement("input");
+  input.value = text;
+  input.setAttribute("readonly", "readonly");
+  input.style.position = "fixed";
+  input.style.top = "-1000px";
+  document.body.appendChild(input);
+  input.select();
   document.execCommand("copy");
-  document.body.removeChild(temp);
-  alert(`已複製 LINE ID：${lineId}`);
+  document.body.removeChild(input);
+  alert(`已複製${label || "內容"}：${text}`);
 }
 
-function openLineAppWithId(lineId) {
-  if (!lineId) return alert("此團員尚未設定 LINE ID。");
-  copyLineId(lineId);
+function v29OpenLine(lineId) {
+  if (!lineId) {
+    alert("尚未設定 LINE ID。");
+    return;
+  }
+
+  v29CopyText(lineId, " LINE ID");
+
   setTimeout(() => {
     window.location.href = "line://nv/addFriends";
   }, 350);
 }
 
-function openLineHelp() {
-  alert("LINE 官方不保證能用 LINE ID 直接撥打或直接開啟聊天。本功能會先複製 LINE ID，再嘗試開啟 LINE。進入 LINE 後請貼上 ID 搜尋。");
-}
-
-function filterLineContacts() {
-  const input = document.getElementById("lineContactSearch");
+function v29FilterLineContacts() {
+  const input = document.getElementById("v29LineSearch");
   const keyword = input ? input.value.trim().toLowerCase() : "";
-  document.querySelectorAll(".line-contact-card").forEach(card => {
-    const text = (card.dataset.search || "").toLowerCase();
-    card.style.display = text.includes(keyword) ? "" : "none";
+  document.querySelectorAll(".v29-line-card").forEach(card => {
+    const search = (card.dataset.search || "").toLowerCase();
+    card.style.display = search.includes(keyword) ? "" : "none";
   });
 }
 
-function renderLineContactCenter() {
+function v29ShowLineNotice() {
+  alert("LINE 官方不保證可用 LINE ID 直接撥打或直接開啟聊天。本功能採用最穩定方式：先複製 LINE ID，再嘗試開啟 LINE。進入 LINE 後請貼上 ID 搜尋對方。");
+}
+
+function renderV29LineContactCenter() {
   contentPage.innerHTML += `
-    <div class="line-contact-panel">
-      <div class="line-contact-header">
+    <section class="v29-line-shell">
+      <div class="v29-line-head">
         <div>
-          <div class="line-contact-kicker">LINE Contact</div>
-          <div class="line-contact-title">聯絡 LINE</div>
-          <div class="line-contact-desc">
-            點選「複製 ID」後可貼到 LINE 搜尋；點選「開啟 LINE」會先複製 ID，再嘗試開啟 LINE。
-          </div>
+          <div class="v29-line-badge">LINE 聯絡名單</div>
+          <h2>聯絡(LINE)</h2>
+          <p>固定名單版，已移除舊版團長手動輸入欄位。點選複製後可到 LINE 搜尋。</p>
         </div>
-        <button class="line-help-btn" type="button" onclick="openLineHelp()">說明</button>
+        <button class="v29-line-notice-btn" type="button" onclick="v29ShowLineNotice()">說明</button>
       </div>
 
-      <input id="lineContactSearch" class="line-contact-search" type="text"
-        placeholder="搜尋姓名或 LINE ID" oninput="filterLineContacts()" />
+      <div class="v29-line-search-wrap">
+        <input id="v29LineSearch" class="v29-line-search" type="text" placeholder="搜尋姓名或 LINE ID" oninput="v29FilterLineContacts()">
+      </div>
 
-      <div class="line-contact-list">
-        ${lineContacts.map(person => `
-          <div class="line-contact-card" data-search="${person.name} ${person.lineId} ${person.note}">
-            <div class="line-avatar">${person.name.slice(0, 1)}</div>
-            <div class="line-contact-info">
-              <div class="line-contact-name">${person.name}</div>
-              <div class="line-contact-id">LINE ID：${person.lineId}</div>
-              <div class="line-contact-note">${person.note}</div>
+      <div class="v29-line-list">
+        ${v29LineContacts.map(person => `
+          <article class="v29-line-card" data-search="${person.name} ${person.lineId} ${person.role}">
+            <div class="v29-line-avatar">${person.name.slice(0, 1)}</div>
+            <div class="v29-line-main">
+              <div class="v29-line-name-row">
+                <strong>${person.name}</strong>
+                <span>${person.role}</span>
+              </div>
+              <div class="v29-line-id">LINE ID：${person.lineId}</div>
+              <div class="v29-line-actions">
+                <button type="button" onclick="v29CopyText('${person.lineId}', ' LINE ID')">複製 ID</button>
+                <button type="button" onclick="v29OpenLine('${person.lineId}')">開啟 LINE</button>
+              </div>
             </div>
-            <div class="line-contact-actions">
-              <button type="button" onclick="copyLineId('${person.lineId}')">複製 ID</button>
-              <button type="button" onclick="openLineAppWithId('${person.lineId}')">開啟 LINE</button>
-            </div>
-          </div>
+          </article>
         `).join("")}
       </div>
-    </div>
+    </section>
   `;
 }
 
