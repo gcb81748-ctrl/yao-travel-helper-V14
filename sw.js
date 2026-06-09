@@ -1,11 +1,11 @@
-const CACHE_NAME = "yao-travel-v19-countdown-center-20260608";
+const CACHE_NAME = "yao-travel-v20-member-location-share-20260608";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./style.css?v=19",
-  "./app.js?v=19",
-  "./firebase.js?v=19",
+  "./style.css?v=20",
+  "./app.js?v=20",
+  "./firebase.js?v=20",
   "./manifest.json"
 ];
 

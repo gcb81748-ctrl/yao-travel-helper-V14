@@ -72,3 +72,48 @@ window.cloudListenItineraries = function (onData, onError) {
 };
 
 console.log("V17_CACHEFIX_ACTIVE Firebase realtime listener loaded");
+
+
+/* ===== V20 團員定位分享 ===== */
+window.cloudSaveMemberLocation = async function (memberName, locationData) {
+  await db.collection("memberLocations").doc(memberName).set(
+    {
+      name: memberName,
+      lat: locationData.lat,
+      lng: locationData.lng,
+      accuracy: locationData.accuracy || null,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+};
+
+window.cloudListenMemberLocations = function (onData, onError) {
+  return db.collection("memberLocations").onSnapshot(
+    (snapshot) => {
+      const members = [];
+      snapshot.forEach(doc => {
+        members.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      onData(members);
+    },
+    (error) => {
+      if (typeof onError === "function") onError(error);
+      else console.error("memberLocations 即時監聽失敗：", error);
+    }
+  );
+};
+
+window.cloudClearMemberLocations = async function () {
+  const snapshot = await db.collection("memberLocations").get();
+  const batch = db.batch();
+
+  snapshot.forEach(doc => {
+    batch.delete(doc.ref);
+  });
+
+  await batch.commit();
+};

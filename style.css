@@ -1475,3 +1475,182 @@ body.leader-mode .leader-only{
     font-size:9px;
   }
 }
+
+
+/* ===== V20 團員定位分享 ===== */
+.location-share-panel{
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:14px;
+  background:linear-gradient(180deg,#fff8fb 0%,#ffffff 100%);
+  box-shadow:
+    0 10px 22px rgba(85,45,60,.075),
+    inset 0 0 0 1px rgba(255,190,210,.25);
+}
+
+.location-share-title{
+  color:#342630;
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:7px;
+}
+
+.location-share-desc{
+  color:#7e656f;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+.location-label{
+  display:block;
+  color:#d94d7d;
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.location-select{
+  width:100%;
+  border:0;
+  outline:none;
+  border-radius:16px;
+  background:#fff3f7;
+  color:#342630;
+  font-size:15px;
+  font-weight:900;
+  padding:13px 14px;
+  box-shadow:inset 0 0 0 1px rgba(255,150,185,.22);
+}
+
+.location-status{
+  margin-top:12px;
+  border-radius:16px;
+  padding:12px;
+  background:#eef8ff;
+  color:#397596;
+  font-size:13px;
+  font-weight:900;
+}
+
+.location-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+
+.update-location-btn,
+.all-location-btn,
+.clear-location-btn,
+.member-map-btn{
+  border:0;
+  border-radius:999px;
+  padding:10px 13px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.update-location-btn{
+  background:linear-gradient(180deg,#ff96b8,#ff6c9f);
+  color:#fff;
+  box-shadow:0 7px 14px rgba(255,108,159,.20);
+}
+
+.all-location-btn{
+  background:linear-gradient(180deg,#90d9ff,#4fb5ef);
+  color:#fff;
+  box-shadow:0 7px 14px rgba(79,181,239,.18);
+}
+
+.clear-location-btn{
+  background:#fff;
+  color:#b84b65;
+  box-shadow:inset 0 0 0 1px rgba(184,75,101,.28);
+}
+
+.member-location-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.member-location-card{
+  border-radius:20px;
+  padding:14px;
+  background:#fff8fb;
+  box-shadow:
+    0 8px 18px rgba(85,45,60,.055),
+    inset 0 0 0 1px rgba(255,190,210,.22);
+}
+
+.member-location-top{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.member-location-avatar{
+  flex:0 0 auto;
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#ff96b8,#ff6c9f);
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+  box-shadow:0 8px 18px rgba(255,108,159,.20);
+}
+
+.member-location-main{
+  flex:1;
+  min-width:0;
+}
+
+.member-location-name{
+  color:#342630;
+  font-size:16px;
+  font-weight:900;
+}
+
+.member-location-time,
+.member-location-coord{
+  margin-top:4px;
+  color:#7e656f;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.4;
+}
+
+.member-location-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  padding-left:58px;
+}
+
+.member-map-btn{
+  background:#fff;
+  color:#d94d7d;
+  box-shadow:inset 0 0 0 1px rgba(255,120,167,.28);
+}
+
+.member-map-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+@media(max-width:380px){
+  .member-location-actions{
+    padding-left:0;
+  }
+
+  .location-actions{
+    flex-direction:column;
+  }
+}

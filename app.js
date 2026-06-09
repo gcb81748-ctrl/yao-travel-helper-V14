@@ -1,4 +1,4 @@
-console.log("V19_COUNTDOWN_CENTER app.js loaded");
+console.log("V20_MEMBER_LOCATION_SHARE app.js loaded");
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");
@@ -1066,84 +1066,244 @@ function renderNavigation() {
   contentPage.appendChild(grid);
 }
 
-function renderLocationShare() {
-  contentPage.innerHTML += `<div class="note">免費前端版目前可開啟 Google Maps。<br>若要顯示所有團員即時定位，需要下一階段加入 Firebase。</div>`;
-  const btn = document.createElement("button");
-  btn.className = "list-btn";
-  btn.type = "button";
-  btn.textContent = "開啟 Google Maps";
-  btn.onclick = () => window.open("https://www.google.com/maps", "_blank");
-  contentPage.appendChild(btn);
+
+const MEMBER_LOCATION_KEY = "yaoTravelSelectedMemberV20";
+let memberLocationUnsubscribe = null;
+let latestMemberLocations = [];
+
+const locationMembers = [
+  "堯", "靜雯", "阿胖", "小兒", "靖公", "靖娟",
+  "娟大兒", "小妹", "潔如", "曼寧", "家安", "淑蓉"
+];
+
+function getSelectedMemberName() {
+  return localStorage.getItem(MEMBER_LOCATION_KEY) || "";
 }
 
+function saveSelectedMemberName(name) {
+  localStorage.setItem(MEMBER_LOCATION_KEY, name);
+}
 
-function openNearbyMapSearch(query) {
-  if (!navigator.geolocation) {
-    openGoogleMap(query + " 愛知 名古屋");
+function formatLocationTime(value) {
+  if (!value) return "尚無更新時間";
+
+  let date;
+
+  if (value.toDate && typeof value.toDate === "function") {
+    date = value.toDate();
+  } else if (typeof value === "string" || typeof value === "number") {
+    date = new Date(value);
+  } else {
+    return "剛剛更新";
+  }
+
+  if (Number.isNaN(date.getTime())) return "剛剛更新";
+
+  return date.toLocaleString("zh-TW", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function startMemberLocationListener() {
+  if (typeof window.cloudListenMemberLocations !== "function") {
+    console.warn("Firebase memberLocations 監聽尚未載入。");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      const url = `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},15z`;
-      window.open(url, "_blank");
+  if (memberLocationUnsubscribe) {
+    memberLocationUnsubscribe();
+    memberLocationUnsubscribe = null;
+  }
+
+  memberLocationUnsubscribe = window.cloudListenMemberLocations(
+    (members) => {
+      latestMemberLocations = members || [];
+      renderMemberLocationList();
     },
-    () => {
-      alert("無法取得目前位置，將改用一般 Google Maps 搜尋。");
-      openGoogleMap(query + " 愛知 名古屋");
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000
+    (error) => {
+      console.error("團員定位同步失敗：", error);
+      const list = document.getElementById("memberLocationList");
+      if (list) {
+        list.innerHTML = `<div class="note">Firebase 團員定位同步失敗，請檢查網路或 Firestore 規則。</div>`;
+      }
     }
   );
 }
 
-function renderNearbySearchPage(title, description, groups) {
-  contentPage.innerHTML += `
-    <div class="nearby-header">
-      <div class="nearby-title">${title}</div>
-      <div class="nearby-desc">${description}</div>
-    </div>
-    <div class="note">
-      點選下方按鈕後，系統會向手機要求定位權限，再用 Google Maps 依照目前位置搜尋。
-    </div>
-    <div class="nearby-section-list"></div>
-  `;
+function updateMyLocation() {
+  const select = document.getElementById("memberNameSelect");
+  const memberName = select ? select.value : "";
 
-  const list = contentPage.querySelector(".nearby-section-list");
+  if (!memberName) {
+    alert("請先選擇你是哪一位團員。");
+    return;
+  }
 
-  groups.forEach(group => {
-    const section = document.createElement("div");
-    section.className = "nearby-section";
-    section.innerHTML = `
-      <div class="nearby-section-title">
-        <span>${group.icon}</span>
-        <strong>${group.title}</strong>
+  saveSelectedMemberName(memberName);
+
+  if (!navigator.geolocation) {
+    alert("此裝置不支援定位功能。");
+    return;
+  }
+
+  const status = document.getElementById("locationStatus");
+  if (status) status.textContent = "正在取得 GPS 位置...";
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const locationData = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      };
+
+      try {
+        if (typeof window.cloudSaveMemberLocation !== "function") {
+          throw new Error("Firebase 定位儲存功能尚未載入");
+        }
+
+        await window.cloudSaveMemberLocation(memberName, locationData);
+
+        if (status) {
+          status.textContent = `已更新 ${memberName} 的位置，精準度約 ${Math.round(locationData.accuracy || 0)} 公尺。`;
+        }
+
+        alert("位置已更新到 Firebase。");
+      } catch (error) {
+        console.error("位置上傳失敗：", error);
+        if (status) status.textContent = "位置取得成功，但上傳 Firebase 失敗。";
+        alert("位置取得成功，但上傳 Firebase 失敗。請檢查 Firestore 規則。");
+      }
+    },
+    (error) => {
+      console.error("取得定位失敗：", error);
+      if (status) status.textContent = "取得定位失敗。請確認手機定位權限已開啟。";
+      alert("取得定位失敗。請確認 Safari / 瀏覽器允許定位。");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 30000
+    }
+  );
+}
+
+function openMemberLocationMap(lat, lng, name) {
+  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  window.open(url, "_blank");
+}
+
+function openAllMemberLocationsMap() {
+  const valid = latestMemberLocations.filter(member => member.lat && member.lng);
+
+  if (valid.length === 0) {
+    alert("目前沒有任何團員位置。");
+    return;
+  }
+
+  const first = valid[0];
+  const url = `https://www.google.com/maps/search/?api=1&query=${first.lat},${first.lng}`;
+  window.open(url, "_blank");
+}
+
+async function clearAllMemberLocations() {
+  if (!confirm("確定要清除所有團員定位資料？")) return;
+
+  try {
+    if (typeof window.cloudClearMemberLocations !== "function") {
+      throw new Error("Firebase 清除定位功能尚未載入");
+    }
+
+    await window.cloudClearMemberLocations();
+    alert("已清除所有團員定位資料。");
+  } catch (error) {
+    console.error("清除定位失敗：", error);
+    alert("清除定位失敗，請檢查 Firebase 設定。");
+  }
+}
+
+function renderMemberLocationList() {
+  const list = document.getElementById("memberLocationList");
+  if (!list) return;
+
+  const sortedMembers = [...latestMemberLocations].sort((a, b) => {
+    return locationMembers.indexOf(a.name) - locationMembers.indexOf(b.name);
+  });
+
+  if (sortedMembers.length === 0) {
+    list.innerHTML = `<div class="note">目前尚未有團員更新位置。</div>`;
+    return;
+  }
+
+  list.innerHTML = "";
+
+  sortedMembers.forEach(member => {
+    const hasLocation = member.lat && member.lng;
+    const card = document.createElement("div");
+    card.className = "member-location-card";
+    card.innerHTML = `
+      <div class="member-location-top">
+        <div class="member-location-avatar">${String(member.name || "?").charAt(0)}</div>
+        <div class="member-location-main">
+          <div class="member-location-name">${member.name || "未命名團員"}</div>
+          <div class="member-location-time">最後更新：${formatLocationTime(member.updatedAt)}</div>
+          <div class="member-location-coord">
+            ${hasLocation ? `座標：${Number(member.lat).toFixed(5)}, ${Number(member.lng).toFixed(5)}` : "尚無座標"}
+          </div>
+        </div>
       </div>
-      <div class="nearby-button-grid"></div>
+      <div class="member-location-actions">
+        <button class="member-map-btn" type="button" ${hasLocation ? "" : "disabled"}>Google Maps</button>
+      </div>
     `;
 
-    const grid = section.querySelector(".nearby-button-grid");
+    const mapBtn = card.querySelector(".member-map-btn");
+    mapBtn.onclick = () => openMemberLocationMap(member.lat, member.lng, member.name);
 
-    group.items.forEach(item => {
-      const btn = document.createElement("button");
-      btn.className = "nearby-search-card";
-      btn.type = "button";
-      btn.innerHTML = `
-        <span class="nearby-card-icon">${item.icon}</span>
-        <span class="nearby-card-title">${item.label}</span>
-        <span class="nearby-card-subtitle">${item.query}</span>
-      `;
-      btn.onclick = () => openNearbyMapSearch(item.query);
-      grid.appendChild(btn);
-    });
-
-    list.appendChild(section);
+    list.appendChild(card);
   });
+}
+
+function renderLocationShare() {
+  const selectedMember = getSelectedMemberName();
+
+  contentPage.innerHTML += `
+    <div class="location-share-panel">
+      <div class="location-share-title">📍 團員定位分享</div>
+      <div class="location-share-desc">
+        請先選擇自己的名字，再按「更新我的位置」。其他團員會透過 Firebase 看到你的最後位置。
+      </div>
+
+      <label class="location-label" for="memberNameSelect">我是誰？</label>
+      <select id="memberNameSelect" class="location-select">
+        <option value="">請選擇團員</option>
+        ${locationMembers.map(name => `<option value="${name}" ${selectedMember === name ? "selected" : ""}>${name}</option>`).join("")}
+      </select>
+
+      <div id="locationStatus" class="location-status">尚未更新位置</div>
+
+      <div class="location-actions">
+        <button class="update-location-btn" type="button" onclick="updateMyLocation()">更新我的位置</button>
+        <button class="all-location-btn" type="button" onclick="openAllMemberLocationsMap()">開啟最近一位位置</button>
+        <button class="clear-location-btn leader-only" type="button" onclick="clearAllMemberLocations()">團長清除定位</button>
+      </div>
+    </div>
+
+    <div class="location-share-panel">
+      <div class="location-share-title">👥 團員目前位置</div>
+      <div class="location-share-desc">
+        此頁會即時顯示團員最後更新的位置。網頁版無法背景持續定位，請團員需要時手動更新。
+      </div>
+      <div id="memberLocationList" class="member-location-list">
+        <div class="note">正在讀取團員位置...</div>
+      </div>
+    </div>
+  `;
+
+  startMemberLocationListener();
 }
 
 function renderNearbySpots() {
