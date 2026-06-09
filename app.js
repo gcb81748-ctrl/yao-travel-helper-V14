@@ -1,4 +1,51 @@
-console.log("V20_MEMBER_LOCATION_SHARE app.js loaded");
+console.log("V25_PASSWORD_GATE app.js loaded");
+
+/* ===== V25 網站密碼門禁 ===== */
+const SITE_PASSWORD = "1017";
+const PASSWORD_SESSION_KEY = "yaoTravelPasswordPassedV25";
+
+function unlockSite() {
+  document.body.classList.add("site-unlocked");
+  const gate = document.getElementById("passwordGate");
+  if (gate) gate.classList.add("password-gate-hidden");
+}
+
+function checkSitePassword() {
+  const input = document.getElementById("passwordInput");
+  const error = document.getElementById("passwordError");
+  const value = input ? input.value.trim() : "";
+
+  if (value === SITE_PASSWORD) {
+    sessionStorage.setItem(PASSWORD_SESSION_KEY, "true");
+    unlockSite();
+    return;
+  }
+
+  if (error) error.textContent = "密碼錯誤，請重新輸入。";
+  if (input) {
+    input.value = "";
+    input.focus();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.getElementById("passwordButton");
+  const input = document.getElementById("passwordInput");
+
+  if (sessionStorage.getItem(PASSWORD_SESSION_KEY) === "true") {
+    unlockSite();
+    return;
+  }
+
+  if (button) button.addEventListener("click", checkSitePassword);
+  if (input) {
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") checkSitePassword();
+    });
+    setTimeout(() => input.focus(), 300);
+  }
+});
+
 let isLeader = false;
 
 const homePage = document.getElementById("homePage");

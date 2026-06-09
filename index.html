@@ -9,10 +9,21 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>堯的旅遊小助手 test1.5</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=20" />
+  <link rel="stylesheet" href="style.css?v=25" />
 </head>
 
 <body>
+  <div id="passwordGate" class="password-gate">
+    <div class="password-card">
+      <div class="password-emoji">🏯</div>
+      <h1>堯的旅遊小助手 1.5</h1>
+      <p>請輸入通行密碼才能進入旅程</p>
+      <input id="passwordInput" class="password-input" type="password" inputmode="numeric" placeholder="請輸入密碼">
+      <button id="passwordButton" class="password-button" type="button">進入旅程</button>
+      <div id="passwordError" class="password-error"></div>
+    </div>
+  </div>
+
   <div class="app-bg">
     <div class="phone-app">
 
@@ -53,8 +64,8 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-  <script src="firebase.js?v=20"></script>
-  <script src="app.js?v=20"></script>
+  <script src="firebase.js?v=25"></script>
+  <script src="app.js?v=25"></script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js");

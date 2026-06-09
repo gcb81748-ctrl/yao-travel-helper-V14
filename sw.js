@@ -1,11 +1,11 @@
-const CACHE_NAME = "yao-travel-v20-member-location-share-20260608";
+const CACHE_NAME = "yao-travel-v25-password-gate-20260609";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./style.css?v=20",
-  "./app.js?v=20",
-  "./firebase.js?v=20",
+  "./style.css?v=25",
+  "./app.js?v=25",
+  "./firebase.js?v=25",
   "./manifest.json"
 ];
 
