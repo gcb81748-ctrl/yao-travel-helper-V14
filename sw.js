@@ -1,11 +1,11 @@
-const CACHE_NAME = "yao-travel-v29-clean-line-contact-center-20260610";
+const CACHE_NAME = "yao-travel-v30-clean-base-fixed-line-20260610";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./style.css?v=29",
-  "./app.js?v=29",
-  "./firebase.js?v=29",
+  "./style.css?v=30",
+  "./app.js?v=30",
+  "./firebase.js?v=30",
   "./manifest.json"
 ];
 
@@ -18,39 +18,26 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", event => {
-  const requestUrl = new URL(event.request.url);
+  if (event.request.method !== "GET") return;
 
-  // Firebase and Google CDN should always use network.
-  if (
-    requestUrl.hostname.includes("firebase") ||
-    requestUrl.hostname.includes("googleapis") ||
-    requestUrl.hostname.includes("gstatic")
-  ) {
+  const url = new URL(event.request.url);
+  if (url.hostname.includes("firebase") || url.hostname.includes("googleapis") || url.hostname.includes("gstatic")) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // For core app files, try network first to avoid old JS/CSS on iPhone.
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          if (event.request.method === "GET") {
-            cache.put(event.request, responseClone);
-          }
-        });
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
       })
       .catch(() => caches.match(event.request))
