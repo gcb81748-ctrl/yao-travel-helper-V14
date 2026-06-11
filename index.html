@@ -7,18 +7,18 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="旅遊助手" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <title>堯的旅遊小助手 test1.6</title>
+  <title>堯的旅遊小助手 V31.1</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=32" />
+  <link rel="stylesheet" href="style.css?v=311" />
 </head>
 
 <body>
   <div id="passwordGate" class="password-gate">
     <div class="password-card">
       <div class="password-emoji">🏯</div>
-      <h1>堯的旅遊小助手 1.5</h1>
-      <p>請輸入通行密碼才能進入旅程</p>
-      <input id="passwordInput" class="password-input" type="password" inputmode="numeric" placeholder="請輸入密碼">
+      <h1>堯的旅遊小助手 V31.1</h1>
+      <p>請輸入通行密碼才能解鎖旅程與 LINE 聯絡功能</p>
+      <input id="passwordInput" class="password-input" type="password" inputmode="numeric" placeholder="請輸入密碼" autocomplete="current-password">
       <button id="passwordButton" class="password-button" type="button">進入旅程</button>
       <div id="passwordError" class="password-error"></div>
     </div>
@@ -58,14 +58,14 @@
         </button>
       </footer>
 
-      <div class="footer-name">堯的旅遊小助手 test1.6 💕</div>
+      <div class="footer-name">堯的旅遊小助手 V31.1 🔐</div>
     </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-  <script src="firebase.js?v=32"></script>
-  <script src="app.js?v=32"></script>
+  <script src="firebase.js?v=311"></script>
+  <script src="app.js?v=311"></script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js");
